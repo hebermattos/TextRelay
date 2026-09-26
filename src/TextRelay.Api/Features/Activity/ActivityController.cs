@@ -5,7 +5,7 @@ using Sms.Api.Auth;
 using Sms.Api.Middleware;
 using Sms.Application.Common;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Activity;
 
 public sealed record PageActivityRequest(string Page);
 
