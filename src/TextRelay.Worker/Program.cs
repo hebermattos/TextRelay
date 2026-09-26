@@ -28,8 +28,4 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration, registerConsumers: true);
 builder.Services.AddInfrastructureWorkers();
 
-builder.Services.AddHostedService<AlertEvaluationOutboxPublisher>();
-builder.Services.AddHostedService<AlertIncidentStateWorker>();
-builder.Services.AddHostedService<SmsQueuePublisherWorker>();
-
 await builder.Build().RunAsync();
