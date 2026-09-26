@@ -1,7 +1,7 @@
-using Sms.Application.Auth;
-using Sms.Application.Providers;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Providers;
 
-namespace Sms.Application.Administration;
+namespace Sms.Api.Features.Administration;
 
 public sealed record TenantSummary(Guid Id, string Name, string TimeZoneId, bool IsActive, DateTimeOffset CreatedAt);
 public sealed record ClientSummary(Guid Id, string ClientId, bool IsActive, DateTimeOffset CreatedAt);

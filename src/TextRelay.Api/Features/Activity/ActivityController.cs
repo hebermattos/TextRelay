@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sms.Api.Auth;
-using Sms.Api.Middleware;
-using Sms.Application.Common;
+using Sms.Api.Features.Auth;
+using Sms.Api.Shared.Auditing;
+using Sms.Api.Shared.Tenancy;
 
 namespace Sms.Api.Features.Activity;
 

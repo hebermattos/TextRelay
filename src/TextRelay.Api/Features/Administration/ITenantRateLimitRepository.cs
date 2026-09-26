@@ -1,4 +1,4 @@
-namespace Sms.Application.Administration;
+namespace Sms.Api.Features.Administration;
 
 public sealed record TenantRateLimitSettings(int RequestsPerMinute, int SmsPerMinute, int OllamaRequestsPerMinute);
 

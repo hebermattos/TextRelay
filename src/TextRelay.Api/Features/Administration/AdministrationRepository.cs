@@ -1,11 +1,11 @@
 using Dapper;
 using Npgsql;
-using Sms.Application.Administration;
-using Sms.Application.Auth;
-using Sms.Application.Providers;
-using Sms.Application.Security;
+using Sms.Api.Features.Administration;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Providers;
+using Sms.Api.Shared.Security;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Administration;
 
 public sealed class AdministrationRepository(
     SqlConnectionFactory connectionFactory,
@@ -15,7 +15,7 @@ public sealed class AdministrationRepository(
     public async Task<IReadOnlyList<TenantSummary>> ListTenantsAsync(int skip, int take, CancellationToken cancellationToken)
     {
         // This cross-tenant metadata query is exposed only by the PlatformAdmin policy.
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/AdministrationRepository.ListTenantsAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/AdministrationRepository.ListTenantsAsync.01.sql");
         using var connection = connectionFactory.CreateConnection();
 
         var tenants = await connection.QueryAsync<TenantSummary>(new CommandDefinition(
@@ -34,7 +34,7 @@ public sealed class AdministrationRepository(
         var previous = await configurationCache.GetAsync(tenantId, cancellationToken);
         using var connection = connectionFactory.CreateConnection();
         var updated = await connection.ExecuteAsync(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/AdministrationRepository.UpdateTenantAsync.08.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/AdministrationRepository.UpdateTenantAsync.08.sql"),
             new { TenantId = tenantId, Name = name, TimeZoneId = timeZoneId, IsActive = isActive },
             cancellationToken: cancellationToken)) == 1;
 
@@ -57,7 +57,7 @@ public sealed class AdministrationRepository(
         try
         {
             await connection.ExecuteAsync(new CommandDefinition(
-                Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/AdministrationRepository.CreateClientAsync.03.sql"),
+                Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/AdministrationRepository.CreateClientAsync.03.sql"),
                 new
                 {
                     Id = Guid.NewGuid(),
@@ -83,7 +83,7 @@ public sealed class AdministrationRepository(
         var previous = await configurationCache.GetAsync(tenantId, cancellationToken);
         using var connection = connectionFactory.CreateConnection();
         var updated = await connection.ExecuteAsync(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/AdministrationRepository.SetClientActiveAsync.04.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/AdministrationRepository.SetClientActiveAsync.04.sql"),
             new { TenantId = tenantId, ClientId = clientId, IsActive = isActive, Now = DateTimeOffset.UtcNow },
             cancellationToken: cancellationToken)) == 1;
 
@@ -98,7 +98,7 @@ public sealed class AdministrationRepository(
         var previous = await configurationCache.GetAsync(tenantId, cancellationToken);
         using var connection = connectionFactory.CreateConnection();
         var clientIdentifier = await connection.QuerySingleOrDefaultAsync<string>(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/AdministrationRepository.RotateClientSecretAsync.05.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/AdministrationRepository.RotateClientSecretAsync.05.sql"),
             new { TenantId = tenantId, ClientId = clientId, Hash = hash, Salt = salt, Iterations = iterations, Now = DateTimeOffset.UtcNow },
             cancellationToken: cancellationToken));
 

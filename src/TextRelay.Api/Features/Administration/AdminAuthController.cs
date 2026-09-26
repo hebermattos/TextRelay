@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Sms.Api.Auth;
-using Sms.Application.Auth;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Auth;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Administration;
 
 public sealed record AdminTokenRequest(
     [Required, StringLength(100, MinimumLength = 1)] string Username,

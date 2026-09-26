@@ -1,10 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using Sms.Application.Auth;
-using Sms.Application.Providers;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Providers;
 
-namespace Sms.Application.Administration;
+namespace Sms.Api.Features.Administration;
 
 public sealed class AdministrationService(IAdministrationRepository repository,
     ITenantSmsProviderRepository providers, IEnumerable<IProviderSettingsPolicy> policies, IProviderCatalogCache providerCatalogCache,

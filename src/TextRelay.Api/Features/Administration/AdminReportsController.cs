@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sms.Api.Auth;
-using Sms.Application.Reports;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Reports;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Administration;
 
 [ApiController]
 [Authorize(Policy = PortalSecurity.AdminPolicy)]

@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sms.Api.Auth;
-using Sms.Api.Filters;
-using Sms.Application.Administration;
-using Sms.Application.Auth;
+using Sms.Api.Features.Auth;
+using Sms.Api.Shared.Filters;
+using Sms.Api.Features.Administration;
+using Sms.Api.Features.Auth;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Administration;
 
 public sealed record UpdateTenantRequest(string Name, string TimeZoneId, bool IsActive);
 public sealed record UpdateTenantRateLimitsRequest(int RequestsPerMinute, int SmsPerMinute, int OllamaRequestsPerMinute);
@@ -18,7 +18,7 @@ public sealed record ClientStateRequest(bool IsActive);
 [ServiceFilter(typeof(PortalExceptionFilter))]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 [Route("api/v1/admin")]
-public sealed class AdministrationController(AdministrationService service, Sms.Application.Messages.ITenantAiSettingsRepository aiSettings, Sms.Application.Messages.SmsRetryOptions retryOptions) : ControllerBase
+public sealed class AdministrationController(AdministrationService service, Sms.Api.Features.Messages.ITenantAiSettingsRepository aiSettings, Sms.Api.Features.Messages.SmsRetryOptions retryOptions) : ControllerBase
 {
     [HttpGet("sms-retry")]
     public IActionResult GetSmsRetry() => Ok(new
