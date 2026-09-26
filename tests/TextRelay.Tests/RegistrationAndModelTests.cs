@@ -1,14 +1,13 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Sms.Application;
 using Sms.Application.Alerts;
 using Sms.Application.Messages;
 using Sms.Application.Providers;
 using Sms.Application.Tenants;
 using Sms.Domain.Tenants;
 using Sms.Domain.Messages;
-using Sms.Infrastructure;
+using Sms.Api.Shared;
 using Sms.Infrastructure.Providers;
 using Sms.Infrastructure.Caching;
 using Sms.Infrastructure.Persistence;
@@ -21,11 +20,11 @@ namespace Sms.Infrastructure.Tests;
 public sealed class RegistrationAndModelTests
 {
     [Fact]
-    public void AddApplication_RegistersApplicationServices()
+    public void AddTextRelay_RegistersApplicationServices()
     {
         var services = new ServiceCollection();
 
-        services.AddApplication();
+        services.AddTextRelay(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Cache:Enabled"] = "false", ["Encryption:MasterKey"] = Convert.ToBase64String(new byte[32]) }).Build());
 
         Assert.Contains(services, x => x.ServiceType == typeof(SendSmsService) && x.Lifetime == ServiceLifetime.Scoped);
         Assert.Contains(services, x => x.ServiceType == typeof(ReceiveSmsWebhookService) && x.Lifetime == ServiceLifetime.Scoped);
@@ -36,7 +35,7 @@ public sealed class RegistrationAndModelTests
     }
 
     [Fact]
-    public void AddInfrastructure_RegistersProvidersAndRepositories()
+    public void AddTextRelay_RegistersProvidersAndRepositories()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -47,7 +46,7 @@ public sealed class RegistrationAndModelTests
         }).Build();
         var services = new ServiceCollection();
 
-        services.AddInfrastructure(configuration);
+        services.AddTextRelay(configuration);
 
         Assert.Equal(3, services.Count(x => x.ServiceType == typeof(ISmsProvider)));
         Assert.Contains(services, x => x.ServiceType == typeof(ISmsProvider) && x.ImplementationType == typeof(MockSmsProvider));
@@ -67,7 +66,7 @@ public sealed class RegistrationAndModelTests
     }
 
     [Fact]
-    public void AddInfrastructure_DoesNotRequireRedisConnectionWhenCacheIsDisabled()
+    public void AddTextRelay_DoesNotRequireRedisConnectionWhenCacheIsDisabled()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -76,7 +75,7 @@ public sealed class RegistrationAndModelTests
         }).Build();
         var services = new ServiceCollection();
 
-        services.AddInfrastructure(configuration);
+        services.AddTextRelay(configuration);
 
         using var provider = services.BuildServiceProvider();
         Assert.IsType<DisabledDistributedCacheProxy>(provider.GetRequiredService<IDistributedCache>());
