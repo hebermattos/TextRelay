@@ -1,7 +1,7 @@
-using Sms.Application.Messages;
-using Sms.Domain.Messages;
+using Sms.Api.Features.Messages;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Infrastructure.Providers;
+namespace Sms.Api.Features.Messages;
 
 /// <summary>In-memory provider for local and automated flow tests. It never calls an external service.</summary>
 public sealed class MockSmsProvider : ISmsProvider

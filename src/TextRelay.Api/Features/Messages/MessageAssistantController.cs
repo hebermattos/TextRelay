@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sms.Api.Auth;
-using Sms.Application.Messages;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Messages;
 
 [ApiController]
 [Authorize(Policy = PortalSecurity.TenantPortalPolicy)]
 [Route("api/v1/message-assistant")]
 [RequestSizeLimit(16_384)]
-public sealed class MessageAssistantController(IMessageAssistant assistant, Sms.Application.Common.ITenantContext tenant) : ControllerBase
+public sealed class MessageAssistantController(IMessageAssistant assistant, Sms.Api.Shared.Tenancy.ITenantContext tenant) : ControllerBase
 {
     [HttpPost("improve")]
     public Task<IActionResult> Improve([FromBody] MessageAssistantRequest request, CancellationToken cancellationToken) =>

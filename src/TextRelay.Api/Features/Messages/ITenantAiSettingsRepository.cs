@@ -1,4 +1,4 @@
-namespace Sms.Application.Messages;
+namespace Sms.Api.Features.Messages;
 
 public sealed record TenantAiSettings(string ImprovePrompt, string ValidatePrompt);
 

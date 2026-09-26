@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using Sms.Application.Messages;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Infrastructure.Providers;
+namespace Sms.Api.Features.Messages;
 
 public sealed class OllamaMessageAssistant(HttpClient client, ITenantAiSettingsRepository settings) : IMessageAssistant
 {

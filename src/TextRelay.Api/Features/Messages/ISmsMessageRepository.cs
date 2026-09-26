@@ -1,6 +1,6 @@
-using Sms.Domain.Messages;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Application.Messages;
+namespace Sms.Api.Features.Messages;
 
 public interface ISmsMessageRepository
 {

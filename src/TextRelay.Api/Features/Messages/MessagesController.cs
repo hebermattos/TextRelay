@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Sms.Api.Auth;
-using Sms.Application.Common;
-using Sms.Application.Messages;
+using Sms.Api.Features.Auth;
+using Sms.Api.Shared.Tenancy;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Messages;
 
 [ApiController]
 [Authorize(Policy = PortalSecurity.TenantPortalPolicy)]
@@ -61,7 +61,7 @@ public sealed class MessagesController(ITenantContext tenantContext, ISmsMessage
     private Task<TimeZoneInfo> Zone(CancellationToken cancellationToken) =>
         timeZones.GetAsync(tenantContext.TenantId, cancellationToken);
 
-    private static object ToResponse(Sms.Domain.Messages.SmsMessage message, TimeZoneInfo zone) => new
+    private static object ToResponse(Sms.Api.Features.Messages.SmsMessage message, TimeZoneInfo zone) => new
     {
         message.Id, message.TenantId, message.UserId, message.From, message.To, message.Body, message.Provider,
         message.ProviderMessageId, message.Direction, message.QueueStatus, message.Status,

@@ -1,6 +1,6 @@
-using Sms.Domain.Messages;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Application.Messages;
+namespace Sms.Api.Features.Messages;
 
 public sealed record SendSmsRequest(string To, string Body, string? From = null, string? Provider = null,
     DateTime? ScheduledAt = null, Guid? UserId = null);
