@@ -367,33 +367,34 @@ The diagram reflects the current Docker Compose topology and startup dependencie
 
 The diagram contains only persisted data structures from the transactional `sms_api` schema and the `sms_api_reporting` read model. Runtime components such as RabbitMQ queues and consumers are documented in the architecture and RabbitMQ sections instead of being modeled as database entities. `AlertEvaluationOutbox` and `TenantSmsOverviewOutbox` remain part of the transactional schema because they are persisted tables. The audit/error-log database remains separate.
 
-The API uses Vertical Slice Architecture at its HTTP/application boundary: endpoint controllers and HTTP-specific collaborators are grouped under `src/TextRelay.Api/Features`, while use cases and contracts are grouped under `src/TextRelay.Application/Features` by the same capability. Cross-cutting concerns such as middleware, rate limiting, health checks, security abstractions, and OpenAPI remain shared. Provider and persistence implementations stay isolated in Infrastructure.\n\nThe two API containers and Worker are separate processes and can be deployed and scaled independently. HAProxy is the single host-facing API entry point; API containers are reachable only on the internal Compose network. The API handles HTTP, authentication, authorization, webhooks, and RabbitMQ publishing. The Worker owns RabbitMQ consumers, scheduled-message publishing, failed-publish retry, alert event publishing, per-rule alert evaluation, and RabbitMQ monitoring. Both wait for their required infrastructure dependencies before starting. HyperDX browser access is exposed separately through the Basic Auth proxy. The optional `webhook-tests` service is enabled through the `tests` profile.
+The backend uses a single vertical-slice project. There are no separate Application, Domain, or Infrastructure projects. Each feature owns its HTTP surface, business rules, contracts/models, repositories, SQL, provider integration, and feature-specific messaging under `src/TextRelay.Api/Features/<Feature>`. Only genuinely cross-cutting code belongs under `src/TextRelay.Api/Shared`.\n\nThe two API containers and Worker are separate processes and can be deployed and scaled independently. HAProxy is the single host-facing API entry point; API containers are reachable only on the internal Compose network. The API handles HTTP, authentication, authorization, webhooks, and RabbitMQ publishing. The Worker owns RabbitMQ consumers, scheduled-message publishing, failed-publish retry, alert event publishing, per-rule alert evaluation, and RabbitMQ monitoring. Both wait for their required infrastructure dependencies before starting. HyperDX browser access is exposed separately through the Basic Auth proxy. The optional `webhook-tests` service is enabled through the `tests` profile.
 
 ```text
 src/TextRelay.Api
-  Features/                    HTTP vertical slices grouped by capability
-    Activity/
-    Administration/
-    Alerts/
-    Auth/
-    Logs/
-    Messages/
-    OptOuts/
-    Overview/
-    Reports/
-    Templates/
-    Webhooks/
-  Middleware/                  Cross-cutting HTTP pipeline concerns
-  RateLimiting/                Cross-cutting distributed rate limiting
-  Health/                      Dependency health checks
-  OpenApi/                     OpenAPI/Swagger configuration
-src/TextRelay.Application
-  Features/                    Use cases and contracts grouped by the same business capabilities
-  Common/                      Shared application abstractions
-  Security/                    Shared security abstractions
-src/TextRelay.Worker           RabbitMQ consumers and background workers
-src/TextRelay.Domain           Domain models
-src/TextRelay.Infrastructure   SQL, providers, encryption, observability
+  Features/                    Complete vertical slices grouped by capability
+    Administration/            Endpoints, rules, repositories and SQL
+    Alerts/                    Endpoints, rules, messaging, repositories and SQL
+    Auth/                      Authentication, repositories and SQL
+    Messages/                  Send/receive rules, providers, messaging, repositories and SQL
+    OptOuts/                   Opt-out rules, persistence and SQL
+    Overview/                  Overview projection/messaging and SQL
+    Providers/                 Provider configuration and SQL
+    Reports/                   Reporting contracts, persistence and SQL
+    Templates/                 Template behavior, persistence and SQL
+    Tenants/                   Tenant behavior, provisioning and SQL
+    Webhooks/                  Provider webhook endpoints and validation/parsing
+  Shared/                      Only cross-cutting concerns reused by multiple slices
+    Auditing/
+    Caching/
+    Health/
+    Messaging/
+    Observability/
+    OpenApi/
+    Persistence/
+    RateLimiting/
+    Security/
+    Tenancy/
+src/TextRelay.Worker           Separate background-process host reusing the same slices
 ui                       Angular UI
 database                 Database schemas and test seeds
 tools/TextRelay.Provision      Bootstrap provisioning
