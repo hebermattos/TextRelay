@@ -11,9 +11,6 @@
   <ItemGroup>
     <ProjectReference Include="../../database/seeds/TextRelay.Seed/TextRelay.Seed.csproj" />
     <ProjectReference Include="..\..\src\TextRelay.Api\TextRelay.Api.csproj" />
-    <ProjectReference Include="..\..\src\TextRelay.Infrastructure\TextRelay.Infrastructure.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Using Include="Xunit" />
-  </ItemGroup>
+  <ItemGroup><Using Include="Xunit" /></ItemGroup>
 </Project>
