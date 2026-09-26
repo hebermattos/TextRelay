@@ -2,7 +2,7 @@ using MassTransit;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Sms.Infrastructure.Messaging;
+namespace Sms.Api.Features.Messages;
 
 public sealed class SmsQueuePublisherWorker(
     ISmsQueuePublishSource source,

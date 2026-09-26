@@ -1,4 +1,4 @@
-namespace Sms.Domain.Messages;
+namespace Sms.Api.Features.Messages;
 
 public enum SmsDirection { Outbound = 1, Inbound = 2 }
 public enum SmsQueueStatus { NotQueued = 1, Queued = 2, Scheduled = 3, Processing = 4 }

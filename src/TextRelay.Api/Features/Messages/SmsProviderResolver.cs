@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
-using Sms.Application.Messages;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Infrastructure.Providers;
+namespace Sms.Api.Features.Messages;
 
 public sealed class SmsProviderResolver(IEnumerable<ISmsProvider> providers, IConfiguration configuration) : ISmsProviderResolver
 {

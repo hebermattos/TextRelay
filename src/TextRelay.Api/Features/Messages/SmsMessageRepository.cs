@@ -1,15 +1,15 @@
 using Dapper;
-using Sms.Application.Messages;
-using Sms.Application.Security;
-using Sms.Domain.Messages;
+using Sms.Api.Features.Messages;
+using Sms.Api.Shared.Security;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Messages;
 
 public sealed class SmsMessageRepository(SqlConnectionFactory connectionFactory, ISmsContentProtector protector) : ISmsMessageRepository
 {
     public async Task<SmsMessage?> GetByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.GetByIdAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.GetByIdAsync.01.sql");
         using var connection = connectionFactory.CreateConnection();
         var message = await connection.QuerySingleOrDefaultAsync<SmsMessage>(new CommandDefinition(sql, new { TenantId = tenantId, Id = id }, cancellationToken: cancellationToken));
         return message is null ? null : Decrypt(message);
@@ -17,7 +17,7 @@ public sealed class SmsMessageRepository(SqlConnectionFactory connectionFactory,
 
     public async Task<IReadOnlyList<SmsMessage>> GetHistoryAsync(Guid tenantId, int skip, int take, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.GetHistoryAsync.02.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.GetHistoryAsync.02.sql");
         using var connection = connectionFactory.CreateConnection();
         var rows = await connection.QueryAsync<SmsMessage>(new CommandDefinition(sql, new { TenantId = tenantId, Skip = skip, Take = take }, cancellationToken: cancellationToken));
         return rows.Select(Decrypt).ToArray();
@@ -25,7 +25,7 @@ public sealed class SmsMessageRepository(SqlConnectionFactory connectionFactory,
 
     public async Task<IReadOnlyList<SmsStatusHistory>> GetStatusHistoryAsync(Guid tenantId, Guid messageId, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.GetStatusHistoryAsync.03.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.GetStatusHistoryAsync.03.sql");
         using var connection = connectionFactory.CreateConnection();
         var rows = await connection.QueryAsync<SmsStatusHistory>(new CommandDefinition(sql, new { TenantId = tenantId, MessageId = messageId }, cancellationToken: cancellationToken));
         return rows.AsList();
@@ -33,14 +33,14 @@ public sealed class SmsMessageRepository(SqlConnectionFactory connectionFactory,
 
     public async Task InsertAsync(SmsMessage message, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.InsertAsync.04.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.InsertAsync.04.sql");
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, EncryptedParameters(message), cancellationToken: cancellationToken));
     }
 
     public async Task InsertInboundIfNotExistsAsync(SmsMessage message, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.InsertInboundIfNotExistsAsync.05.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.InsertInboundIfNotExistsAsync.05.sql");
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, EncryptedParameters(message), cancellationToken: cancellationToken));
     }
@@ -49,7 +49,7 @@ public sealed class SmsMessageRepository(SqlConnectionFactory connectionFactory,
     {
         using var connection = connectionFactory.CreateConnection();
         return await connection.ExecuteScalarAsync<int>(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.TryQueueScheduledAsync.08.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.TryQueueScheduledAsync.08.sql"),
             new { TenantId = tenantId, Id = id, Scheduled = SmsQueueStatus.Scheduled, Queued = SmsQueueStatus.Queued, UpdatedAt = updatedAt },
             cancellationToken: cancellationToken)) != 0;
     }
@@ -58,28 +58,28 @@ public sealed class SmsMessageRepository(SqlConnectionFactory connectionFactory,
     {
         using var connection = connectionFactory.CreateConnection();
         return await connection.ExecuteScalarAsync<int>(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.TryClaimQueuedAsync.10.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.TryClaimQueuedAsync.10.sql"),
             new { TenantId = tenantId, Id = id, Queued = SmsQueueStatus.Queued, Processing = SmsQueueStatus.Processing, Pending = SmsStatus.Pending, UpdatedAt = updatedAt },
             cancellationToken: cancellationToken)) != 0;
     }
 
     public async Task UpdateQueueStatusAsync(Guid tenantId, Guid id, SmsQueueStatus queueStatus, DateTimeOffset updatedAt, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.UpdateQueueStatusAsync.09.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.UpdateQueueStatusAsync.09.sql");
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, new { TenantId = tenantId, Id = id, QueueStatus = queueStatus, UpdatedAt = updatedAt }, cancellationToken: cancellationToken));
     }
 
     public async Task UpdateStatusAsync(Guid tenantId, Guid id, SmsStatus status, string? providerMessageId, DateTimeOffset updatedAt, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.UpdateStatusAsync.06.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.UpdateStatusAsync.06.sql");
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, new { TenantId = tenantId, Id = id, Status = status, ProviderMessageId = providerMessageId, UpdatedAt = updatedAt }, cancellationToken: cancellationToken));
     }
 
     public async Task UpdateStatusByProviderMessageIdAsync(Guid tenantId, string provider, string providerMessageId, SmsStatus status, DateTimeOffset updatedAt, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/SmsMessageRepository.UpdateStatusByProviderMessageIdAsync.07.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/SmsMessageRepository.UpdateStatusByProviderMessageIdAsync.07.sql");
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, new
         {

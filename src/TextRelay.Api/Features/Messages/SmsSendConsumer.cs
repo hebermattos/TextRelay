@@ -1,13 +1,13 @@
 using MassTransit;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Sms.Application.Common;
-using Sms.Application.Messages;
-using Sms.Application.OptOut;
-using Sms.Domain.Messages;
-using Sms.Infrastructure.Observability;
+using Sms.Api.Shared.Tenancy;
+using Sms.Api.Features.Messages;
+using Sms.Api.Features.OptOuts;
+using Sms.Api.Features.Messages;
+using Sms.Api.Shared.Observability;
 
-namespace Sms.Infrastructure.Messaging;
+namespace Sms.Api.Features.Messages;
 
 public sealed class SmsSendConsumer(
     IWorkerTenantContext tenantContext,

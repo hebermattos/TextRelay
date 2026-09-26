@@ -1,7 +1,7 @@
-using Sms.Domain.Messages;
-using Sms.Application.OptOut;
+using Sms.Api.Features.Messages;
+using Sms.Api.Features.OptOuts;
 
-namespace Sms.Application.Messages;
+namespace Sms.Api.Features.Messages;
 
 public sealed class ReceiveSmsWebhookService(ISmsMessageRepository messages, OptOutService optOut)
 {

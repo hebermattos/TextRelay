@@ -1,9 +1,9 @@
 using MassTransit;
 using System.Diagnostics;
-using Sms.Application.Messages;
-using Sms.Infrastructure.Observability;
+using Sms.Api.Features.Messages;
+using Sms.Api.Shared.Observability;
 
-namespace Sms.Infrastructure.Messaging;
+namespace Sms.Api.Features.Messages;
 
 public sealed class SmsSendEventPublisher(IPublishEndpoint publishEndpoint) : ISmsSendEventPublisher
 {

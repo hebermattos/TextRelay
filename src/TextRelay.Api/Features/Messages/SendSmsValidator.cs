@@ -1,7 +1,7 @@
-using Sms.Application.Auth;
-using Sms.Application.Common;
+using Sms.Api.Features.Auth;
+using Sms.Api.Shared.Tenancy;
 
-namespace Sms.Application.Messages;
+namespace Sms.Api.Features.Messages;
 
 public sealed class SendSmsValidator(
     ITenantContext tenantContext,

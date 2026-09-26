@@ -1,8 +1,8 @@
-using Sms.Application.Common;
-using Sms.Application.OptOut;
-using Sms.Domain.Messages;
+using Sms.Api.Shared.Tenancy;
+using Sms.Api.Features.OptOuts;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Application.Messages;
+namespace Sms.Api.Features.Messages;
 
 public sealed class SendSmsService(
     ITenantContext tenantContext,

@@ -1,8 +1,20 @@
 using Dapper;
-using Sms.Domain.Messages;
-using Sms.Infrastructure.Persistence;
+using Sms.Api.Features.Messages;
+using Sms.Api.Features.Administration;
+using Sms.Api.Features.Alerts;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Logs;
+using Sms.Api.Features.Messages;
+using Sms.Api.Features.OptOuts;
+using Sms.Api.Features.Overview;
+using Sms.Api.Features.Providers;
+using Sms.Api.Features.Reports;
+using Sms.Api.Features.Templates;
+using Sms.Api.Features.Tenants;
+using Sms.Api.Shared.Persistence;
+using Sms.Api.Shared.Tenancy;
 
-namespace Sms.Infrastructure.Messaging;
+namespace Sms.Api.Features.Messages;
 
 public interface ISmsQueuePublishSource
 {
@@ -23,7 +35,7 @@ public sealed class SmsQueuePublishSource(SqlConnectionFactory connectionFactory
     {
         using var connection = connectionFactory.CreateConnection();
         var rows = await connection.QueryAsync<SmsQueuePublishMessage>(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Messaging/SmsQueuePublishSource.GetPendingAsync.01.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Messaging/SmsQueuePublishSource.GetPendingAsync.01.sql"),
             new
             {
                 NotQueued = SmsQueueStatus.NotQueued,
@@ -39,7 +51,7 @@ public sealed class SmsQueuePublishSource(SqlConnectionFactory connectionFactory
     {
         using var connection = connectionFactory.CreateConnection();
         var affected = await connection.ExecuteAsync(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Messaging/SmsQueuePublishSource.TryClaimAsync.01.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Messaging/SmsQueuePublishSource.TryClaimAsync.01.sql"),
             new
             {
                 message.TenantId,
@@ -57,7 +69,7 @@ public sealed class SmsQueuePublishSource(SqlConnectionFactory connectionFactory
     {
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Messaging/SmsQueuePublishSource.ReleaseAsync.01.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Messaging/SmsQueuePublishSource.ReleaseAsync.01.sql"),
             new
             {
                 message.TenantId,
