@@ -1,4 +1,4 @@
-namespace Sms.Application.Administration;
+namespace Sms.Api.Features.Administration;
 
 public static class TimeZoneCatalog
 {

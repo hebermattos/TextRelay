@@ -1,7 +1,7 @@
 using MassTransit;
-using Sms.Application.Alerts;
+using Sms.Api.Features.Alerts;
 
-namespace Sms.Infrastructure.Messaging;
+namespace Sms.Api.Features.Alerts;
 
 public sealed class AlertRuleEvaluationConsumer(IAlertRepository alerts) : IConsumer<EvaluateAlertRuleEvent>
 {

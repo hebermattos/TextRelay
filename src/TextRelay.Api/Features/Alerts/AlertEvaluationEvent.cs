@@ -1,6 +1,6 @@
-using Sms.Domain.Messages;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Infrastructure.Messaging;
+namespace Sms.Api.Features.Alerts;
 
 public sealed record AlertEvaluationEvent(
     Guid EventId,

@@ -1,10 +1,10 @@
 using System.Text.Json;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using Sms.Application.Administration;
-using Sms.Infrastructure.Caching;
+using Sms.Api.Features.Administration;
+using Sms.Api.Shared.Caching;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Administration;
 
 public sealed class TenantRateLimitRepository(
     SqlConnectionFactory connections,
@@ -22,7 +22,7 @@ public sealed class TenantRateLimitRepository(
             if (value is not null) return value;
         }
 
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/TenantRateLimitRepository.GetAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/TenantRateLimitRepository.GetAsync.01.sql");
         using var connection = connections.CreateConnection();
         var settings = await connection.QuerySingleOrDefaultAsync<TenantRateLimitSettings>(
             new CommandDefinition(sql, new { TenantId = tenantId }, cancellationToken: cancellationToken))
@@ -34,7 +34,7 @@ public sealed class TenantRateLimitRepository(
 
     public async Task SaveAsync(Guid tenantId, TenantRateLimitSettings settings, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/TenantRateLimitRepository.SaveAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/TenantRateLimitRepository.SaveAsync.01.sql");
         using var connection = connections.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, new
         {

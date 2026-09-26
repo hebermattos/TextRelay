@@ -1,6 +1,6 @@
-using Sms.Domain.Messages;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Application.Alerts;
+namespace Sms.Api.Features.Alerts;
 
 public sealed class AlertRuleFactory(TimeProvider clock)
 {

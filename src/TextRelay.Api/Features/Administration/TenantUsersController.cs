@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sms.Api.Auth;
-using Sms.Application.Auth;
-using Sms.Application.Common;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Auth;
+using Sms.Api.Shared.Tenancy;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Administration;
 
 public sealed record CreateTenantUserRequest(string Username, string Email, string Password, string Role);
 public sealed record UpdateTenantUserRequest(string Username, string Email, string Role);

@@ -1,4 +1,4 @@
-namespace Sms.Application.Alerts;
+namespace Sms.Api.Features.Alerts;
 
 public sealed class AlertService(IAlertRepository repository, AlertRuleFactory ruleFactory)
 {

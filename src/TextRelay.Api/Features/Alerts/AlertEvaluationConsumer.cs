@@ -1,9 +1,21 @@
 using Dapper;
 using MassTransit;
-using Sms.Application.Alerts;
-using Sms.Infrastructure.Persistence;
+using Sms.Api.Features.Alerts;
+using Sms.Api.Features.Administration;
+using Sms.Api.Features.Alerts;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Logs;
+using Sms.Api.Features.Messages;
+using Sms.Api.Features.OptOuts;
+using Sms.Api.Features.Overview;
+using Sms.Api.Features.Providers;
+using Sms.Api.Features.Reports;
+using Sms.Api.Features.Templates;
+using Sms.Api.Features.Tenants;
+using Sms.Api.Shared.Persistence;
+using Sms.Api.Shared.Tenancy;
 
-namespace Sms.Infrastructure.Messaging;
+namespace Sms.Api.Features.Alerts;
 
 public sealed class AlertEvaluationConsumer(
     ReportingSqlConnectionFactory reportingConnectionFactory,
@@ -16,12 +28,12 @@ public sealed class AlertEvaluationConsumer(
         using var connection = reportingConnectionFactory.CreateConnection();
 
         await connection.ExecuteAsync(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Messaging/AlertEvaluationConsumer.Consume.01.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Messaging/AlertEvaluationConsumer.Consume.01.sql"),
             new { message.EventId, message.TenantId, message.Provider, message.Status, message.OccurredAtUtc },
             cancellationToken: context.CancellationToken));
 
         await connection.ExecuteAsync(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Messaging/AlertEvaluationConsumer.Consume.02.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Messaging/AlertEvaluationConsumer.Consume.02.sql"),
             cancellationToken: context.CancellationToken));
 
         var rules = await alerts.ListRulesAsync(message.TenantId, context.CancellationToken);
