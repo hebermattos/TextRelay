@@ -1,8 +1,7 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using Sms.Application;
 using Sms.Application.Common;
-using Sms.Infrastructure;
+using Sms.Api.Shared;
 using Sms.Infrastructure.Messaging;
 using Sms.Infrastructure.Observability;
 using Sms.Worker;
@@ -24,8 +23,7 @@ builder.Services.AddScoped<WorkerTenantContext>();
 builder.Services.AddScoped<IWorkerTenantContext>(services => services.GetRequiredService<WorkerTenantContext>());
 builder.Services.AddScoped<ITenantContext>(services => services.GetRequiredService<WorkerTenantContext>());
 
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration, registerConsumers: true);
-builder.Services.AddInfrastructureWorkers();
+builder.Services.AddTextRelay(builder.Configuration, registerConsumers: true);
+builder.Services.AddWorkerServices();
 
 await builder.Build().RunAsync();

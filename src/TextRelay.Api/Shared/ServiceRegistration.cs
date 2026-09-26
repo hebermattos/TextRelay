@@ -24,9 +24,9 @@ using Sms.Application.OptOut;
 using Sms.Application.Templates;
 using Sms.Infrastructure.Caching;
 
-namespace Sms.Infrastructure;
+namespace Sms.Api.Shared;
 
-public static class DependencyInjection
+public static class ServiceRegistration
 {
     public static IServiceCollection AddRedisConnection(this IServiceCollection services, IConfiguration configuration)
     {
@@ -37,8 +37,16 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, bool registerConsumers = false)
+    public static IServiceCollection AddTextRelay(this IServiceCollection services, IConfiguration configuration, bool registerConsumers = false)
     {
+        services.AddScoped<SendSmsService>();
+        services.AddScoped<SendSmsValidator>();
+        services.AddScoped<AdministrationService>();
+        services.AddScoped<ReceiveSmsWebhookService>();
+        services.AddScoped<TenantProvisioningService>();
+        services.AddScoped<AlertService>();
+        services.AddScoped<AlertRuleFactory>();
+        services.AddScoped<OptOutService>();
         var retryOptions = configuration.GetSection("SmsRetry").Get<SmsRetryOptions>() ?? new SmsRetryOptions();
         retryOptions.Validate();
         services.AddSingleton(retryOptions);
@@ -201,7 +209,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddInfrastructureWorkers(this IServiceCollection services)
+    public static IServiceCollection AddWorkerServices(this IServiceCollection services)
     {
         services.AddHostedService<RabbitMqMonitoringService>();
         services.AddHostedService<AlertEvaluationOutboxPublisher>();
