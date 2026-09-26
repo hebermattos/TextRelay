@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace Sms.Application.Auth;
+namespace Sms.Api.Features.Auth;
 
 public static class ClientSecretHasher
 {

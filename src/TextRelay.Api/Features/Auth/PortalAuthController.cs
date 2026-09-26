@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Sms.Api.Auth;
-using Sms.Application.Auth;
-using Sms.Api.Middleware;
+using Sms.Api.Features.Auth;
+using Sms.Api.Features.Auth;
+using Sms.Api.Shared.Auditing;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Auth;
 
 public sealed record PortalTokenRequest(string Username, string Password, string Context, string? TenantCode = null);
 public sealed record RefreshTokenRequest(string? RefreshToken = null);

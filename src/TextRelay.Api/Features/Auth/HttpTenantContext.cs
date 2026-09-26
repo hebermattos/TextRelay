@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using Sms.Application.Common;
+using Sms.Api.Shared.Tenancy;
 
-namespace Sms.Api.Auth;
+namespace Sms.Api.Features.Auth;
 
 public sealed class HttpTenantContext(IHttpContextAccessor httpContextAccessor) : IWorkerTenantContext
 {

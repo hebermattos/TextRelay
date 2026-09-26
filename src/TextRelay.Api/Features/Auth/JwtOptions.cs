@@ -1,4 +1,4 @@
-namespace Sms.Api.Auth;
+namespace Sms.Api.Features.Auth;
 
 public sealed class JwtOptions
 {

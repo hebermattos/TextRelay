@@ -1,7 +1,7 @@
 using Dapper;
-using Sms.Application.Auth;
+using Sms.Api.Features.Auth;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Auth;
 
 public sealed class ApiClientRepository(
     SqlConnectionFactory connectionFactory,
@@ -13,7 +13,7 @@ public sealed class ApiClientRepository(
     public async Task CreateAsync(CreateApiClient client, CancellationToken cancellationToken = default)
     {
         var previous = await configurationCache.GetAsync(client.TenantId, cancellationToken);
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/ApiClientRepository.CreateAsync.02.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/ApiClientRepository.CreateAsync.02.sql");
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, new
         {

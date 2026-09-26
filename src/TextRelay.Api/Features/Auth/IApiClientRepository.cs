@@ -1,4 +1,4 @@
-namespace Sms.Application.Auth;
+namespace Sms.Api.Features.Auth;
 
 public sealed record ApiClientCredential(Guid TenantId, string ClientId, byte[] SecretHash, byte[] SecretSalt, int SecretIterations);
 public sealed record CreateApiClient(Guid TenantId, string ClientId, byte[] SecretHash, byte[] SecretSalt, int SecretIterations);

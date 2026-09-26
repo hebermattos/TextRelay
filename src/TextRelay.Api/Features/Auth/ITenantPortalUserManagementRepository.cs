@@ -1,4 +1,4 @@
-namespace Sms.Application.Auth;
+namespace Sms.Api.Features.Auth;
 
 public interface ITenantPortalUserManagementRepository
 {
