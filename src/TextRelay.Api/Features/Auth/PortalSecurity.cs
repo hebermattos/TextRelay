@@ -4,9 +4,9 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Sms.Application.Auth;
+using Sms.Api.Features.Auth;
 
-namespace Sms.Api.Auth;
+namespace Sms.Api.Features.Auth;
 
 public static class PortalSecurity
 {

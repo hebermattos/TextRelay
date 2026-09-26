@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Sms.Api.Auth;
+namespace Sms.Api.Features.Auth;
 
 public sealed class TokenService(IOptions<JwtOptions> options)
 {

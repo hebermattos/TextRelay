@@ -1,7 +1,7 @@
 using Dapper;
-using Sms.Application.Logs;
+using Sms.Api.Features.Logs;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Logs;
 
 public sealed class LogEntryRepository(LogsSqlConnectionFactory connectionFactory) : ILogEntryRepository
 {
@@ -13,7 +13,7 @@ public sealed class LogEntryRepository(LogsSqlConnectionFactory connectionFactor
         int take,
         CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/LogEntryRepository.GetActivityAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/LogEntryRepository.GetActivityAsync.01.sql");
 
         await using var connection = connectionFactory.CreateConnection();
         var rows = await connection.QueryAsync<LogEntry>(new CommandDefinition(
@@ -30,7 +30,7 @@ public sealed class LogEntryRepository(LogsSqlConnectionFactory connectionFactor
         int take,
         CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/LogEntryRepository.GetSystemAsync.02.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/LogEntryRepository.GetSystemAsync.02.sql");
 
         await using var connection = connectionFactory.CreateConnection();
         var rows = await connection.QueryAsync<LogEntry>(new CommandDefinition(

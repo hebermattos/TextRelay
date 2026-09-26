@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
-using Sms.Application.Auth;
+using Sms.Api.Features.Auth;
 
-namespace Sms.Api.Auth;
+namespace Sms.Api.Features.Auth;
 
 public sealed record IssuedTokens(string AccessToken, string RefreshToken, int ExpiresIn);
 

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sms.Api.Auth;
-using Sms.Application.Common;
-using Sms.Application.Logs;
+using Sms.Api.Features.Auth;
+using Sms.Api.Shared.Tenancy;
+using Sms.Api.Features.Logs;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.Logs;
 
 [ApiController]
 [Authorize(Policy = PortalSecurity.TenantPortalPolicy)]

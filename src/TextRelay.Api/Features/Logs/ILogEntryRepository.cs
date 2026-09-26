@@ -1,4 +1,4 @@
-namespace Sms.Application.Logs;
+namespace Sms.Api.Features.Logs;
 
 public sealed record LogEntry(
     long Id,

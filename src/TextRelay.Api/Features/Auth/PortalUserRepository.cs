@@ -1,7 +1,7 @@
 using Dapper;
-using Sms.Application.Auth;
+using Sms.Api.Features.Auth;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Auth;
 
 public sealed class PortalUserRepository(SqlConnectionFactory connections) : IPortalUserRepository
 {
@@ -11,7 +11,7 @@ public sealed class PortalUserRepository(SqlConnectionFactory connections) : IPo
         string? tenantCode,
         CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/PortalUserRepository.GetActiveByUsernameAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/PortalUserRepository.GetActiveByUsernameAsync.01.sql");
 
         using var connection = connections.CreateConnection();
         return await connection.QuerySingleOrDefaultAsync<PortalUserAccount>(
@@ -23,7 +23,7 @@ public sealed class PortalUserRepository(SqlConnectionFactory connections) : IPo
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/PortalUserRepository.GetActiveByIdAsync.02.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/PortalUserRepository.GetActiveByIdAsync.02.sql");
 
         using var connection = connections.CreateConnection();
         return await connection.QuerySingleOrDefaultAsync<PortalUserAccount>(

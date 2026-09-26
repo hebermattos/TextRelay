@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Net.Mail;
 
-namespace Sms.Application.Auth;
+namespace Sms.Api.Features.Auth;
 
 public sealed class TenantPortalUserManagementService(
     ITenantPortalUserManagementRepository repository)

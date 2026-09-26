@@ -5,12 +5,12 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
-using Sms.Application.Common;
-using Sms.Application.Messages;
-using Sms.Application.Providers;
-using Sms.Domain.Messages;
+using Sms.Api.Shared.Tenancy;
+using Sms.Api.Features.Messages;
+using Sms.Api.Features.Providers;
+using Sms.Api.Features.Messages;
 
-namespace Sms.Infrastructure.Providers;
+namespace Sms.Api.Features.Messages;
 
 public sealed class BandwidthSmsProvider(
     HttpClient messagingClient,

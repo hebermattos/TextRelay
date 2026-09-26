@@ -1,13 +1,13 @@
 using Dapper;
-using Sms.Application.Auth;
+using Sms.Api.Features.Auth;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Auth;
 
 public sealed class RefreshTokenRepository(SqlConnectionFactory connections) : IRefreshTokenRepository
 {
     public async Task CreateAsync(RefreshTokenSession session, byte[] tokenHash, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/RefreshTokenRepository.CreateAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/RefreshTokenRepository.CreateAsync.01.sql");
         using var connection = connections.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, new
         {
@@ -18,7 +18,7 @@ public sealed class RefreshTokenRepository(SqlConnectionFactory connections) : I
 
     public async Task<bool> RevokeAsync(byte[] tokenHash, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/RefreshTokenRepository.RevokeAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/RefreshTokenRepository.RevokeAsync.01.sql");
         using var connection = connections.CreateConnection();
         return await connection.ExecuteAsync(new CommandDefinition(sql, new { TokenHash = tokenHash }, cancellationToken: cancellationToken)) > 0;
     }
@@ -31,23 +31,23 @@ public sealed class RefreshTokenRepository(SqlConnectionFactory connections) : I
         await connection.OpenAsync(cancellationToken);
         await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
 
-        var selectSql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/RefreshTokenRepository.RotateAsync.01.sql");
+        var selectSql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/RefreshTokenRepository.RotateAsync.01.sql");
         var session = await connection.QuerySingleOrDefaultAsync<RefreshTokenSession>(
             new CommandDefinition(selectSql, new { TokenHash = currentTokenHash }, transaction, cancellationToken: cancellationToken));
         if (session is null)
         {
-            var reuseSql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/RefreshTokenRepository.RevokeFamilyOnReuseAsync.01.sql");
+            var reuseSql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/RefreshTokenRepository.RevokeFamilyOnReuseAsync.01.sql");
             await connection.ExecuteAsync(new CommandDefinition(reuseSql,
                 new { TokenHash = currentTokenHash }, transaction, cancellationToken: cancellationToken));
             await transaction.CommitAsync(cancellationToken);
             return null;
         }
 
-        var revokeSql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/RefreshTokenRepository.RotateAsync.02.sql");
+        var revokeSql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/RefreshTokenRepository.RotateAsync.02.sql");
         await connection.ExecuteAsync(new CommandDefinition(revokeSql,
             new { session.Id, ReplacementHash = replacementTokenHash }, transaction, cancellationToken: cancellationToken));
 
-        var insertSql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/RefreshTokenRepository.RotateAsync.03.sql");
+        var insertSql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/RefreshTokenRepository.RotateAsync.03.sql");
         await connection.ExecuteAsync(new CommandDefinition(insertSql, new
         {
             Id = replacementId, session.UserId, session.Username, session.TenantId, session.Context, session.Role,
