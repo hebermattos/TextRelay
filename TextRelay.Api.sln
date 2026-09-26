@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextRelay.Domain", "src\Tex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextRelay.Infrastructure", "src\TextRelay.Infrastructure\TextRelay.Infrastructure.csproj", "{A4444444-4444-4444-8444-444444444444}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextRelay.Worker", "src\TextRelay.Worker\TextRelay.Worker.csproj", "{A6666666-6666-4666-8666-666666666666}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextRelay.Infrastructure.Tests", "tests\TextRelay.Infrastructure.Tests\TextRelay.Infrastructure.Tests.csproj", "{A5555555-5555-4555-8555-555555555555}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{1633AE39-DF7D-4922-B667-0707E05176EF}"
