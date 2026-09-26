@@ -1,4 +1,4 @@
-namespace Sms.Infrastructure.Messaging;
+namespace Sms.Api.Features.Overview;
 
 public interface ITenantSmsOverviewOutbox
 {

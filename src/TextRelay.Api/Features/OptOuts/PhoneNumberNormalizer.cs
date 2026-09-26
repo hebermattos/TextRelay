@@ -1,4 +1,4 @@
-namespace Sms.Application.OptOut;
+namespace Sms.Api.Features.OptOuts;
 
 public static class PhoneNumberNormalizer
 {

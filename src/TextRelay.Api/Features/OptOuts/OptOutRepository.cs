@@ -1,8 +1,8 @@
 using Dapper;
-using Sms.Application.OptOut;
-using Sms.Application.Security;
+using Sms.Api.Features.OptOuts;
+using Sms.Api.Shared.Security;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.OptOuts;
 
 public sealed class OptOutRepository(
     SqlConnectionFactory connectionFactory,
@@ -10,7 +10,7 @@ public sealed class OptOutRepository(
 {
     public async Task<IReadOnlyList<BlockedNumber>> ListAsync(Guid tenantId, int skip, int take, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/OptOutRepository.ListAsync.01.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/OptOutRepository.ListAsync.01.sql");
         using var connection = connectionFactory.CreateConnection();
         var rows = await connection.QueryAsync<Row>(new CommandDefinition(sql, new { TenantId = tenantId, Skip = skip, Take = take }, cancellationToken: cancellationToken));
         return rows.Select(row => new BlockedNumber(row.Id,
@@ -20,7 +20,7 @@ public sealed class OptOutRepository(
 
     public async Task<bool> IsBlockedAsync(Guid tenantId, string phoneNumber, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/OptOutRepository.IsBlockedAsync.02.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/OptOutRepository.IsBlockedAsync.02.sql");
         using var connection = connectionFactory.CreateConnection();
         return await connection.ExecuteScalarAsync<bool>(new CommandDefinition(sql,
             new { TenantId = tenantId, PhoneHash = Hash(tenantId, phoneNumber) }, cancellationToken: cancellationToken));
@@ -29,7 +29,7 @@ public sealed class OptOutRepository(
     public async Task AddOrUpdateAsync(Guid tenantId, string phoneNumber, string source, string? reason, DateTimeOffset occurredAt, CancellationToken cancellationToken = default)
     {
         var id = Guid.NewGuid();
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/OptOutRepository.AddOrUpdateAsync.03.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/OptOutRepository.AddOrUpdateAsync.03.sql");
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql, new
         {
@@ -41,14 +41,14 @@ public sealed class OptOutRepository(
 
     public async Task<bool> RemoveAsync(Guid tenantId, Guid id, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/OptOutRepository.RemoveAsync.04.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/OptOutRepository.RemoveAsync.04.sql");
         using var connection = connectionFactory.CreateConnection();
         return await connection.ExecuteAsync(new CommandDefinition(sql, new { TenantId = tenantId, Id = id }, cancellationToken: cancellationToken)) > 0;
     }
 
     public async Task RemoveByPhoneAsync(Guid tenantId, string phoneNumber, CancellationToken cancellationToken = default)
     {
-        var sql = Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/OptOutRepository.RemoveByPhoneAsync.05.sql");
+        var sql = Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/OptOutRepository.RemoveByPhoneAsync.05.sql");
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(sql,
             new { TenantId = tenantId, PhoneHash = Hash(tenantId, phoneNumber) }, cancellationToken: cancellationToken));

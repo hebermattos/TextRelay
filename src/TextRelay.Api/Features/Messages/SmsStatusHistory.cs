@@ -1,4 +1,4 @@
-namespace Sms.Domain.Messages;
+namespace Sms.Api.Features.Messages;
 
 public sealed class SmsStatusHistory
 {

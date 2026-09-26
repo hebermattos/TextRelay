@@ -1,10 +1,10 @@
 using System.Text.Json;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using Sms.Application.Messages;
-using Sms.Infrastructure.Caching;
+using Sms.Api.Features.Messages;
+using Sms.Api.Shared.Caching;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Messages;
 
 public sealed class TenantAiSettingsRepository(
     SqlConnectionFactory connectionFactory,
@@ -27,7 +27,7 @@ public sealed class TenantAiSettingsRepository(
 
         using var connection = connectionFactory.CreateConnection();
         var settings = await connection.QuerySingleOrDefaultAsync<TenantAiSettings>(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/TenantAiSettingsRepository.GetAsync.01.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/TenantAiSettingsRepository.GetAsync.01.sql"),
             new { TenantId = tenantId }, cancellationToken: cancellationToken))
             ?? new(DefaultImprovePrompt, DefaultValidatePrompt);
 
@@ -39,7 +39,7 @@ public sealed class TenantAiSettingsRepository(
     {
         using var connection = connectionFactory.CreateConnection();
         await connection.ExecuteAsync(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/TenantAiSettingsRepository.SaveAsync.01.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/TenantAiSettingsRepository.SaveAsync.01.sql"),
             new { TenantId = tenantId, settings.ImprovePrompt, settings.ValidatePrompt, UpdatedAt = DateTimeOffset.UtcNow },
             cancellationToken: cancellationToken));
 

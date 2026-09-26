@@ -1,4 +1,4 @@
-namespace Sms.Application.OptOut;
+namespace Sms.Api.Features.OptOuts;
 
 public sealed record BlockedNumber(
     Guid Id, string PhoneNumber, string Source, string? Reason,

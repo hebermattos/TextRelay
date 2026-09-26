@@ -1,7 +1,7 @@
 using Dapper;
-using Sms.Application.Administration;
+using Sms.Api.Features.Administration;
 
-namespace Sms.Infrastructure.Persistence;
+namespace Sms.Api.Features.Overview;
 
 public sealed class TenantPortalRepository(
     ReportingSqlConnectionFactory reportingFactory,
@@ -21,7 +21,7 @@ public sealed class TenantPortalRepository(
 
         using var reportingConnection = reportingFactory.CreateConnection();
         var counts = await reportingConnection.QuerySingleOrDefaultAsync<Counts>(new CommandDefinition(
-            Sms.Infrastructure.Sql.SqlQuery.Load("Persistence/TenantPortalRepository.GetOverviewCountsAsync.01.sql"),
+            Sms.Api.Shared.Persistence.SqlQuery.Load("Persistence/TenantPortalRepository.GetOverviewCountsAsync.01.sql"),
             new { TenantId = tenantId },
             cancellationToken: cancellationToken)) ?? new Counts(0, 0, 0, 0, 0);
 

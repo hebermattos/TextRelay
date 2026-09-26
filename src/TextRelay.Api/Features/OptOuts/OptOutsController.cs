@@ -1,12 +1,12 @@
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sms.Api.Auth;
-using Sms.Api.Filters;
-using Sms.Application.Common;
-using Sms.Application.OptOut;
+using Sms.Api.Features.Auth;
+using Sms.Api.Shared.Filters;
+using Sms.Api.Shared.Tenancy;
+using Sms.Api.Features.OptOuts;
 
-namespace Sms.Api.Controllers;
+namespace Sms.Api.Features.OptOuts;
 
 [ApiController]
 [Authorize(Policy = PortalSecurity.TenantAdministratorPolicy)]
