@@ -16,7 +16,7 @@ Build a secure multi-tenant REST API for sending, receiving, tracking, and query
   - `TextRelay.Infrastructure`: Dapper repositories, encryption, observability, and provider integrations.
   - `TextRelay.Api`: HTTP endpoints, authentication, authorization, middleware, and API composition root.
   - `TextRelay.Worker`: independently deployable background-process host for RabbitMQ consumers, queue publishing, scheduling, retries, alerts, and messaging monitoring.
-- Keep controllers thin. Business rules belong in application services; external API and database details belong in infrastructure.
+- Organize HTTP and application code by vertical slice. Put feature-specific controllers and HTTP collaborators under `TextRelay.Api/Features/<Feature>` and matching use cases/contracts under `TextRelay.Application/Features/<Feature>`. Keep controllers thin; business rules belong in application services, while external API and database details belong in infrastructure.\n- Keep truly cross-cutting concerns outside feature slices (for example middleware, rate limiting, health checks, OpenAPI, common application abstractions, and shared security abstractions).
 - Use asynchronous APIs for HTTP and database I/O and propagate `CancellationToken`.
 - Keep the implementation as simple and readable as possible. Avoid unnecessary abstractions and complexity.
 
