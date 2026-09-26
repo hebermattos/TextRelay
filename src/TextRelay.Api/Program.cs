@@ -15,9 +15,8 @@ using Sms.Api.Auth;
 using Sms.Api.Middleware;
 using Sms.Api.OpenApi;
 using Sms.Api.RateLimiting;
-using Sms.Application;
 using Sms.Application.Common;
-using Sms.Infrastructure;
+using Sms.Api.Shared;
 using Sms.Infrastructure.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -86,9 +85,8 @@ builder.Services.AddRateLimiter(options =>
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions
         { PermitLimit = 10, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
 });
-builder.Services.AddApplication();
 builder.Services.AddRedisConnection(builder.Configuration);
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddTextRelay(builder.Configuration);
 builder.Services.AddSingleton<IRateLimitCounter, RedisRateLimitCounter>();
 builder.Services.AddDependencyHealthChecks(builder.Configuration);
 
