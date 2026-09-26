@@ -204,6 +204,9 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructureWorkers(this IServiceCollection services)
     {
         services.AddHostedService<RabbitMqMonitoringService>();
+        services.AddHostedService<AlertEvaluationOutboxPublisher>();
+        services.AddHostedService<TenantSmsOverviewOutboxPublisher>();
+        services.AddHostedService<SmsQueuePublisherWorker>();
         return services;
     }
 }
