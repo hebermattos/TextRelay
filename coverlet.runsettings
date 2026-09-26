@@ -4,8 +4,8 @@
     <DataCollectors>
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
-          <!-- SQL adapters and the Compose-validated seed executable are integration concerns, not unit-test coverage targets. -->
-          <Exclude>[TextRelay.Seed]*,[TextRelay.Infrastructure]Sms.Infrastructure.Persistence.*,[TextRelay.Infrastructure]Sms.Infrastructure.Observability.Postgres*Exporter,[TextRelay.Infrastructure]Sms.Infrastructure.Messaging.AlertEvaluationOutboxPublisher*,[TextRelay.Infrastructure]Sms.Infrastructure.Messaging.AlertEvaluationConsumer*,[TextRelay.Infrastructure]Sms.Infrastructure.Messaging.SmsSendOutboxPublisher*,[TextRelay.Infrastructure]Sms.Infrastructure.Messaging.SmsSendConsumer*</Exclude>
+          <!-- SQL adapters and the Compose-validated seed executable are integration concerns, not unit-test coverage targets. The backend now compiles into TextRelay.Api. -->
+          <Exclude>[TextRelay.Seed]*,[TextRelay.Api]Sms.Infrastructure.Persistence.*,[TextRelay.Api]Sms.Infrastructure.Observability.Postgres*Exporter,[TextRelay.Api]Sms.Infrastructure.Messaging.AlertEvaluationOutboxPublisher*,[TextRelay.Api]Sms.Infrastructure.Messaging.AlertEvaluationConsumer*,[TextRelay.Api]Sms.Infrastructure.Messaging.SmsSendOutboxPublisher*,[TextRelay.Api]Sms.Infrastructure.Messaging.SmsSendConsumer*</Exclude>
         </Configuration>
       </DataCollector>
     </DataCollectors>
