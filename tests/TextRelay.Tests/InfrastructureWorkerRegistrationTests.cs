@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Sms.Infrastructure;
+using Sms.Api.Shared;
 using Sms.Infrastructure.Messaging;
 
 namespace Sms.Infrastructure.Tests;
@@ -8,11 +8,11 @@ namespace Sms.Infrastructure.Tests;
 public sealed class InfrastructureWorkerRegistrationTests
 {
     [Fact]
-    public void AddInfrastructureWorkers_RegistersExpectedBackgroundServices()
+    public void AddWorkerServices_RegistersExpectedBackgroundServices()
     {
         var services = new ServiceCollection();
 
-        services.AddInfrastructureWorkers();
+        services.AddWorkerServices();
 
         var hostedServiceTypes = services
             .Where(service => service.ServiceType == typeof(IHostedService))
