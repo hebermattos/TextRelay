@@ -22,12 +22,13 @@ public sealed class InfrastructureBehaviorTests
         });
         var factory = Factory(new HttpClient(handler) { BaseAddress = new Uri("http://rabbit/") });
         var service = new RabbitMqMonitoringService(factory,
-            new RabbitMqAlertOptions { VirtualHost = "/", Queue = "alerts", SendQueue = "send", ReportingQueue = "reports" },
+            new RabbitMqAlertOptions { VirtualHost = "/", Queue = "alerts", RuleEvaluationQueue = "rules", SendQueue = "send", ReportingQueue = "reports" },
             Mock.Of<ILogger<RabbitMqMonitoringService>>());
 
         await service.CollectAsync(default);
 
         Assert.Contains(requests, x => x.EndsWith("api/queues/%2F/alerts"));
+        Assert.Contains(requests, x => x.EndsWith("api/queues/%2F/rules"));
         Assert.Contains(requests, x => x.EndsWith("api/queues/%2F/send"));
         Assert.Contains(requests, x => x.EndsWith("api/queues/%2F/reports"));
     }
