@@ -17,6 +17,7 @@ public sealed class RabbitMqOptionsTests
         Assert.Equal((ushort)4, options.SendPrefetchCount);
         Assert.Equal(4, options.SendConcurrentMessageLimit);
         Assert.Equal("sms.alert.evaluation", options.Queue);
+        Assert.Equal("sms.alert.rule-evaluation", options.RuleEvaluationQueue);
         Assert.Equal("sms.send", options.SendQueue);
         Assert.Equal("sms.reporting.overview", options.ReportingQueue);
     }
@@ -36,6 +37,7 @@ public sealed class RabbitMqOptionsTests
             ["RabbitMq:Password"] = "secret",
             ["RabbitMq:VirtualHost"] = "/sms",
             ["RabbitMq:Queue"] = "alerts.queue",
+            ["RabbitMq:RuleEvaluationQueue"] = "rules.queue",
             ["RabbitMq:SendQueue"] = "send.queue",
             ["RabbitMq:ReportingQueue"] = "reporting.queue"
         }).Build();
@@ -52,6 +54,7 @@ public sealed class RabbitMqOptionsTests
         Assert.Equal("secret", options.Password);
         Assert.Equal("/sms", options.VirtualHost);
         Assert.Equal("alerts.queue", options.Queue);
+        Assert.Equal("rules.queue", options.RuleEvaluationQueue);
         Assert.Equal("send.queue", options.SendQueue);
         Assert.Equal("reporting.queue", options.ReportingQueue);
     }
