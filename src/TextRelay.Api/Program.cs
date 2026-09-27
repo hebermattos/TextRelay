@@ -80,13 +80,14 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    options.AddPolicy("login", context => RateLimitPartition.GetFixedWindowLimiter(
+    options.AddPolicy("refresh", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions
         { PermitLimit = 10, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
 });
 builder.Services.AddRedisConnection(builder.Configuration);
 builder.Services.AddTextRelay(builder.Configuration);
 builder.Services.AddSingleton<IRateLimitCounter, RedisRateLimitCounter>();
+builder.Services.AddSingleton<ILoginRateLimiter, RedisLoginRateLimiter>();
 builder.Services.AddDependencyHealthChecks(builder.Configuration);
 
 var app = builder.Build();
@@ -99,6 +100,7 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseRouting();
 app.UseMiddleware<AuditPipelineMiddleware>();
+app.UseMiddleware<LoginRateLimitMiddleware>();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseMiddleware<TenantRateLimitMiddleware>();
