@@ -151,6 +151,8 @@ Rate limiting is enforced per authenticated tenant/login and request bucket. Cou
 
 The effective key combines **tenant + login + request bucket**, preventing one authenticated user from consuming another user's allowance. Exceeding a configured limit returns HTTP `429 Too Many Requests`.
 
+Login endpoints use a separate distributed limiter keyed only by the client IP. The first three failed login attempts are allowed without a delay. After the third failure, Redis applies progressive blocking intervals of **1, 2, 4, 8, and then 10 minutes**, with 10 minutes as the maximum. A successful login clears the IP penalty. The failure history expires after one hour without another failed login. Portal/admin refresh endpoints retain a fixed per-IP limit of 10 requests per minute.
+
 The platform can configure tenant rate limits. The values are persisted with the tenant configuration rather than being tied to a specific API instance. Redis contains the distributed counters used to enforce those configured limits.
 
 The Ollama bucket is intentionally more restrictive because local model inference is comparatively expensive. Its default of 6 requests per minute is equivalent to an average of one request every 10 seconds.
