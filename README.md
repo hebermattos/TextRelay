@@ -204,6 +204,8 @@ Sms__DefaultProvider
 Sms__PublicBaseUrl
 RabbitMq__Host
 RabbitMq__Port
+RabbitMq__ManagementHost
+RabbitMq__ManagementPort
 RABBITMQ_ERLANG_COOKIE
 RabbitMq__User
 RabbitMq__Password
@@ -405,7 +407,7 @@ tests                    Unit and integration tests
 
 ### Monitoring
 
-The Worker collects RabbitMQ queue metrics from the Management API every five minutes and exports them through the existing OpenTelemetry pipeline to ClickStack/HyperDX. In Docker Compose, AMQP traffic uses `rabbitmq-lb:5672`, while management polling uses `rabbitmq-1:15672`; transport and management endpoints are configured independently.
+The Worker collects RabbitMQ queue metrics from the Management API every five minutes and exports them through the existing OpenTelemetry pipeline to ClickStack/HyperDX. In Docker Compose, HAProxy exposes both AMQP at `rabbitmq-lb:5672` and the Management API at `rabbitmq-lb:15672`, health-checking and balancing all three RabbitMQ nodes so monitoring does not depend on a single broker. Transport and management endpoints remain independently configurable for deployments that use separate endpoints.
 
 - `rabbitmq.queue.messages.ready`: messages waiting for a consumer.
 - `rabbitmq.queue.messages.unacknowledged`: messages currently being processed.

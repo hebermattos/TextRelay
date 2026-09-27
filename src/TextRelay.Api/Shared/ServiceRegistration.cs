@@ -1,4 +1,3 @@
-using MassTransit;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
@@ -47,9 +46,7 @@ public static class ServiceRegistration
         services.AddScoped<AlertService>();
         services.AddScoped<AlertRuleFactory>();
         services.AddScoped<OptOutService>();
-        var retryOptions = configuration.GetSection("SmsRetry").Get<SmsRetryOptions>() ?? new SmsRetryOptions();
-        retryOptions.Validate();
-        services.AddSingleton(retryOptions);
+        services.AddRabbitMqMessaging(configuration, registerConsumers);
 
         if (CacheConfiguration.IsEnabled(configuration))
         {
@@ -77,83 +74,6 @@ public static class ServiceRegistration
         services.AddSingleton<ISmsQueuePublishSource, SmsQueuePublishSource>();
         services.AddSingleton<ITenantSmsOverviewEventPublisher, TenantSmsOverviewEventPublisher>();
         services.AddScoped<ITenantSmsOverviewProjection, TenantSmsOverviewProjection>();
-        var rabbitMq = RabbitMqAlertOptions.From(configuration);
-        services.AddSingleton(rabbitMq);
-        services.AddHttpClient("RabbitMqManagement", client =>
-        {
-            client.BaseAddress = new Uri($"http://{rabbitMq.ManagementHost}:{rabbitMq.ManagementPort}/");
-            client.Timeout = TimeSpan.FromSeconds(10);
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-                "Basic", Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{rabbitMq.User}:{rabbitMq.Password}")));
-        });
-        services.AddMassTransit(bus =>
-        {
-            if (!registerConsumers)
-            {
-                bus.UsingRabbitMq((_, rabbit) =>
-                {
-                    rabbit.Host(rabbitMq.Host, (ushort)rabbitMq.Port, rabbitMq.VirtualHost, host =>
-                    {
-                        host.Username(rabbitMq.User);
-                        host.Password(rabbitMq.Password);
-                    });
-                });
-                return;
-            }
-
-            bus.AddConsumer<AlertEvaluationConsumer>();
-            bus.AddConsumer<AlertRuleEvaluationConsumer>();
-            bus.AddConsumer<SmsSendConsumer>();
-            bus.AddConsumer<TenantSmsOverviewConsumer>();
-            bus.UsingRabbitMq((context, rabbit) =>
-            {
-                rabbit.Host(rabbitMq.Host, (ushort)rabbitMq.Port, rabbitMq.VirtualHost, host =>
-                {
-                    host.Username(rabbitMq.User);
-                    host.Password(rabbitMq.Password);
-                });
-                rabbit.ReceiveEndpoint(rabbitMq.Queue, endpoint =>
-                {
-                    endpoint.SetQuorumQueue(3);
-                    endpoint.PrefetchCount = 1;
-                    endpoint.ConcurrentMessageLimit = 1;
-                    endpoint.UseMessageRetry(retry => retry.Interval(3, TimeSpan.FromSeconds(5)));
-                    endpoint.ConfigureConsumer<AlertEvaluationConsumer>(context);
-                });
-                rabbit.ReceiveEndpoint(rabbitMq.RuleEvaluationQueue, endpoint =>
-                {
-                    endpoint.SetQuorumQueue(3);
-                    endpoint.PrefetchCount = 8;
-                    endpoint.ConcurrentMessageLimit = 8;
-                    endpoint.UseMessageRetry(retry => retry.Interval(3, TimeSpan.FromSeconds(5)));
-                    endpoint.ConfigureConsumer<AlertRuleEvaluationConsumer>(context);
-                });
-                rabbit.ReceiveEndpoint(rabbitMq.SendQueue, endpoint =>
-                {
-                    endpoint.SetQuorumQueue(3);
-                    endpoint.PrefetchCount = rabbitMq.SendPrefetchCount;
-                    endpoint.ConcurrentMessageLimit = rabbitMq.SendConcurrentMessageLimit;
-                    endpoint.UseDelayedRedelivery(redelivery =>
-                    {
-                        redelivery.Handle<TransientSmsProviderException>();
-                        redelivery.Intervals(
-                            Enumerable.Range(0, retryOptions.MaxAttempts)
-                                .Select(attempt => TimeSpan.FromSeconds(
-                                    retryOptions.InitialIntervalSeconds * Math.Pow(2, attempt)))
-                                .ToArray());
-                    });
-                    endpoint.ConfigureConsumer<SmsSendConsumer>(context);
-                });
-                rabbit.ReceiveEndpoint(rabbitMq.ReportingQueue, endpoint =>
-                {
-                    endpoint.SetQuorumQueue(3);
-                    endpoint.PrefetchCount = 1;
-                    endpoint.ConcurrentMessageLimit = 1;
-                    endpoint.UseMessageRetry(retry => retry.Interval(3, TimeSpan.FromSeconds(5)));
-                    endpoint.ConfigureConsumer<TenantSmsOverviewConsumer>(context);
-                });
-            });
-        });
         services.AddSingleton<ISecretProtector, AesGcmSecretProtector>();
         services.AddSingleton<ISmsContentProtector, AesGcmSmsContentProtector>();
         services.AddSingleton<TwilioWebhookValidator>();
@@ -206,15 +126,6 @@ public static class ServiceRegistration
             client.Timeout = TimeSpan.FromSeconds(30);
         });
         services.AddScoped<ISmsProvider>(sp => sp.GetRequiredService<BandwidthSmsProvider>());
-        return services;
-    }
-
-    public static IServiceCollection AddWorkerServices(this IServiceCollection services)
-    {
-        services.AddHostedService<RabbitMqMonitoringService>();
-        services.AddHostedService<AlertEvaluationOutboxPublisher>();
-        services.AddHostedService<TenantSmsOverviewOutboxPublisher>();
-        services.AddHostedService<SmsQueuePublisherWorker>();
         return services;
     }
 }

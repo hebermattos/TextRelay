@@ -27,7 +27,6 @@ builder.Services.AddOpenTelemetry()
         .AddAspNetCoreInstrumentation()
         .AddOtlpExporter())
     .WithMetrics(metrics => metrics
-        .AddMeter(Sms.Infrastructure.Messaging.RabbitMqMonitoringService.MeterName)
         .AddMeter(Sms.Infrastructure.Observability.TextRelayTelemetry.MeterName)
         .AddAspNetCoreInstrumentation()
         .AddOtlpExporter());
