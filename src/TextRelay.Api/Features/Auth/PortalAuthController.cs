@@ -17,7 +17,6 @@ public sealed class PortalAuthController(
     RefreshTokenService refreshTokens) : ControllerBase
 {
     [AllowAnonymous]
-    [EnableRateLimiting("login")]
     [RequestSizeLimit(4096)]
     [HttpPost("token")]
     public async Task<IActionResult> Token([FromBody] PortalTokenRequest request, CancellationToken cancellationToken)
@@ -52,7 +51,7 @@ public sealed class PortalAuthController(
     }
 
     [AllowAnonymous]
-    [EnableRateLimiting("login")]
+    [EnableRateLimiting("refresh")]
     [RequestSizeLimit(2048)]
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
