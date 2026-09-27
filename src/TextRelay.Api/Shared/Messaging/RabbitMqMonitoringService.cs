@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Collections.Concurrent;
 using System.Net.Http.Json;
@@ -39,13 +38,18 @@ public sealed class RabbitMqMonitoringService(
         {
             var client = httpClientFactory.CreateClient("RabbitMqManagement");
             var virtualHost = Uri.EscapeDataString(options.VirtualHost);
-            foreach (var queue in new[] { options.Queue, options.SendQueue, options.ReportingQueue })
+            foreach (var queue in new[]
+                     {
+                         options.Queue,
+                         options.RuleEvaluationQueue,
+                         options.SendQueue,
+                         options.ReportingQueue
+                     })
             {
                 var result = await client.GetFromJsonAsync<QueueMetrics>(
                     $"api/queues/{virtualHost}/{Uri.EscapeDataString(queue)}", cancellationToken);
                 if (result is null) continue;
 
-                var tags = new TagList { { "rabbitmq.queue", queue } };
                 Current[queue] = result;
 
                 if (result.Consumers == 0)
