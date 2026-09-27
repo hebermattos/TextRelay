@@ -39,10 +39,10 @@ public sealed class LoginRateLimitMiddleware(RequestDelegate next)
     {
         if (!HttpMethods.IsPost(context.Request.Method)) return false;
 
-        var path = context.Request.Path;
-        return path.Equals("/api/v1/auth/token", StringComparison.OrdinalIgnoreCase)
-            || path.Equals("/api/v1/portal/auth/token", StringComparison.OrdinalIgnoreCase)
-            || path.Equals("/api/v1/admin/auth/token", StringComparison.OrdinalIgnoreCase);
+        var path = context.Request.Path.Value;
+        return string.Equals(path, "/api/v1/auth/token", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(path, "/api/v1/portal/auth/token", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(path, "/api/v1/admin/auth/token", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string Normalize(IPAddress? address)
