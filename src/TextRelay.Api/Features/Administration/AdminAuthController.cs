@@ -18,7 +18,6 @@ public sealed class AdminAuthController(
     RefreshTokenService refreshTokens) : ControllerBase
 {
     [AllowAnonymous]
-    [EnableRateLimiting("login")]
     [HttpPost("token")]
     [RequestSizeLimit(4096)]
     public async Task<IActionResult> Token(AdminTokenRequest request, CancellationToken cancellationToken = default)
@@ -56,7 +55,7 @@ public sealed class AdminAuthController(
     }
 
     [AllowAnonymous]
-    [EnableRateLimiting("login")]
+    [EnableRateLimiting("refresh")]
     [HttpPost("refresh")]
     [RequestSizeLimit(2048)]
     public async Task<IActionResult> Refresh(RefreshTokenRequest request, CancellationToken cancellationToken = default)
