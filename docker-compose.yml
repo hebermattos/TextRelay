@@ -11,7 +11,6 @@ services:
       RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER:-sms}"
       RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD:-sms}"
       RABBITMQ_ERLANG_COOKIE: "${RABBITMQ_ERLANG_COOKIE:-text-relay-local-cluster-cookie}"
-    ports: ["15672:15672"]
     volumes:
       - rabbitmq-1-data:/var/lib/rabbitmq
     healthcheck: &rabbitmq-healthcheck
@@ -82,7 +81,7 @@ services:
         condition: service_healthy
     volumes:
       - ./docker/rabbitmq-haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-    ports: ["5672:5672"]
+    ports: ["5672:5672", "15672:15672"]
     restart: unless-stopped
 
   ollama:
@@ -334,7 +333,7 @@ services:
       Ollama__BaseUrl: "http://ollama:11434/"
       RabbitMq__Host: "rabbitmq-lb"
       RabbitMq__Port: "5672"
-      RabbitMq__ManagementHost: "rabbitmq-1"
+      RabbitMq__ManagementHost: "rabbitmq-lb"
       RabbitMq__ManagementPort: "15672"
       RabbitMq__SendPrefetchCount: "${RABBITMQ_SEND_PREFETCH_COUNT:-4}"
       RabbitMq__SendConcurrentMessageLimit: "${RABBITMQ_SEND_CONCURRENCY:-4}"
@@ -377,7 +376,7 @@ services:
       Ollama__BaseUrl: "http://ollama:11434/"
       RabbitMq__Host: "rabbitmq-lb"
       RabbitMq__Port: "5672"
-      RabbitMq__ManagementHost: "rabbitmq-1"
+      RabbitMq__ManagementHost: "rabbitmq-lb"
       RabbitMq__ManagementPort: "15672"
       RabbitMq__SendPrefetchCount: "${RABBITMQ_SEND_PREFETCH_COUNT:-4}"
       RabbitMq__SendConcurrentMessageLimit: "${RABBITMQ_SEND_CONCURRENCY:-4}"
@@ -432,7 +431,7 @@ services:
       Ollama__BaseUrl: "http://ollama:11434/"
       RabbitMq__Host: "rabbitmq-lb"
       RabbitMq__Port: "5672"
-      RabbitMq__ManagementHost: "rabbitmq-1"
+      RabbitMq__ManagementHost: "rabbitmq-lb"
       RabbitMq__ManagementPort: "15672"
       RabbitMq__SendPrefetchCount: "${RABBITMQ_SEND_PREFETCH_COUNT:-4}"
       RabbitMq__SendConcurrentMessageLimit: "${RABBITMQ_SEND_CONCURRENCY:-4}"
