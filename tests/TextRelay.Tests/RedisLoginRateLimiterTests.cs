@@ -47,7 +47,7 @@ public sealed class RedisLoginRateLimiterTests
         database
             .Setup(x => x.KeyDeleteAsync(It.IsAny<RedisKey[]>(), It.IsAny<CommandFlags>()))
             .Callback<RedisKey[], CommandFlags>((keys, _) => deletedKeys = keys)
-            .ReturnsAsync(2);
+            .ReturnsAsync(2L);
         var limiter = CreateLimiter(database);
 
         await limiter.ResetAsync("203.0.113.12");
