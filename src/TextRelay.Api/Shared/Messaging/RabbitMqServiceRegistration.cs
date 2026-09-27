@@ -19,16 +19,6 @@ public static class RabbitMqServiceRegistration
 
         var rabbitMq = RabbitMqAlertOptions.From(configuration);
         services.AddSingleton(rabbitMq);
-        services.AddHttpClient("RabbitMqManagement", client =>
-        {
-            client.BaseAddress = new Uri($"http://{rabbitMq.ManagementHost}:{rabbitMq.ManagementPort}/");
-            client.Timeout = TimeSpan.FromSeconds(10);
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-                "Basic",
-                Convert.ToBase64String(
-                    System.Text.Encoding.UTF8.GetBytes($"{rabbitMq.User}:{rabbitMq.Password}")));
-        });
-
         services.AddMassTransit(bus =>
         {
             if (!registerConsumers)
@@ -96,6 +86,16 @@ public static class RabbitMqServiceRegistration
 
     public static IServiceCollection AddWorkerServices(this IServiceCollection services)
     {
+        services.AddHttpClient("RabbitMqManagement", (serviceProvider, client) =>
+        {
+            var options = serviceProvider.GetRequiredService<RabbitMqAlertOptions>();
+            client.BaseAddress = new Uri($"http://{options.ManagementHost}:{options.ManagementPort}/");
+            client.Timeout = TimeSpan.FromSeconds(10);
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Basic",
+                Convert.ToBase64String(
+                    System.Text.Encoding.UTF8.GetBytes($"{options.User}:{options.Password}")));
+        });
         services.AddHostedService<RabbitMqMonitoringService>();
         services.AddHostedService<AlertEvaluationOutboxPublisher>();
         services.AddHostedService<TenantSmsOverviewOutboxPublisher>();
