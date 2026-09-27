@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Sms.Api.Auth;
 using Sms.Application.Auth;
 using Sms.Api.Middleware;
@@ -14,7 +13,6 @@ public sealed record TokenRequest(string ClientId, string ClientSecret);
 public sealed class AuthController(TokenService tokenService, IApiClientRepository clients) : ControllerBase
 {
     [AllowAnonymous]
-    [EnableRateLimiting("login")]
     [RequestSizeLimit(4096)]
     [HttpPost("token")]
     public async Task<IActionResult> Token([FromBody] TokenRequest request, CancellationToken cancellationToken)
