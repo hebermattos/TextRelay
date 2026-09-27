@@ -60,7 +60,7 @@ public sealed class LoginRateLimitMiddlewareTests
 
         await middleware.InvokeAsync(context, limiter);
 
-        Assert.Equal(["192.0.2.10"], limiter.Failures);
+        Assert.Equal(new[] { "192.0.2.10" }, limiter.Failures);
         Assert.Empty(limiter.Resets);
     }
 
@@ -78,7 +78,7 @@ public sealed class LoginRateLimitMiddlewareTests
         await middleware.InvokeAsync(context, limiter);
 
         Assert.Empty(limiter.Failures);
-        Assert.Equal(["203.0.113.20"], limiter.Resets);
+        Assert.Equal(new[] { "203.0.113.20" }, limiter.Resets);
     }
 
     [Fact]
