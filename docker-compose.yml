@@ -318,6 +318,7 @@ services:
       Encryption__MasterKey: "${ENCRYPTION_MASTER_KEY:-AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=}"
       Sms__PublicBaseUrl: "${SMS_PUBLIC_BASE_URL:-https://localhost:8080}"
       Ollama__BaseUrl: "http://ollama:11434/"
+      Sms__PublicBaseUrl: "${SMS_PUBLIC_BASE_URL:-https://localhost:8080}"
       RabbitMq__Host: "rabbitmq-lb"
       RabbitMq__Port: "5672"
       RabbitMq__ManagementHost: "rabbitmq-lb"
