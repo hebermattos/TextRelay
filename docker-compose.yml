@@ -464,6 +464,9 @@ services:
     mem_reservation: 32m
     mem_limit: 64m
     cpus: 0.20
+    depends_on:
+      haproxy:
+        condition: service_started
     build:
       context: .
       dockerfile: ui/Dockerfile
