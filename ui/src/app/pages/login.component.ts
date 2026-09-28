@@ -54,7 +54,7 @@ export class LoginComponent {
     this.error.set('');
     const request = this.mode() === 'client'
       ? this.auth.loginTenant(identifier, this.credential)
-      : this.auth.loginPortal(identifier, this.credential, 'platform');
+      : this.auth.loginAdmin(identifier, this.credential);
 
     request.pipe(
       takeUntilDestroyed(this.destroyRef),
