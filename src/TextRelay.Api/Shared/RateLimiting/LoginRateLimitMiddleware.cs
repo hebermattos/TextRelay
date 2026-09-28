@@ -31,7 +31,7 @@ public sealed class LoginRateLimitMiddleware(RequestDelegate next)
             return;
         }
 
-        if (context.Response.StatusCode is StatusCodes.Status400BadRequest or StatusCodes.Status401Unauthorized)
+        if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
             await limiter.RecordFailureAsync(ipAddress, context.RequestAborted);
     }
 
