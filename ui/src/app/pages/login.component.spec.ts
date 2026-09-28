@@ -36,10 +36,10 @@ describe('Login screen', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     const component = fixture.componentInstance;
     component.changeMode('platform'); component.credential = 'administrator-password';
-    component.submit(); http.expectNone('/api/v1/portal/auth/token');
+    component.submit(); http.expectNone('/api/v1/admin/auth/token');
     component.username = ' admin '; component.submit();
-    const request = http.expectOne('/api/v1/portal/auth/token');
-    expect(request.request.body).toEqual({ username: 'admin', password: 'administrator-password', context: 'platform' });
+    const request = http.expectOne('/api/v1/admin/auth/token');
+    expect(request.request.body).toEqual({ username: 'admin', password: 'administrator-password' });
     request.flush({ access_token: `h.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 900 }))}.s` });
     expect(component.credential).toBe('');
     expect(TestBed.inject(Router).navigateByUrl).toHaveBeenCalledWith('/admin/tenants');
