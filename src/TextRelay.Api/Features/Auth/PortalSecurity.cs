@@ -66,10 +66,11 @@ public static class PortalSecurity
         var subject = principal.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? principal.FindFirstValue(JwtRegisteredClaimNames.Sub);
         var portalContext = principal.FindFirstValue(ContextClaim);
+        var portalUsername = principal.FindFirstValue("portal_username");
 
-        if (portalContext is not null)
+        if (portalUsername is not null)
         {
-            if (!Guid.TryParse(subject, out var portalUserId))
+            if (portalContext is null || !Guid.TryParse(subject, out var portalUserId))
             {
                 context.Fail("Invalid portal user identity.");
                 return;

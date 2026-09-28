@@ -94,7 +94,11 @@ public sealed class PortalSecurityTests
     {
         var tenant = Guid.NewGuid();
         var repository = new Clients(active ? new(tenant, "client", [], [], 100000) : null);
-        var context = Context(repository, new("tenant_id", tenant.ToString()), new(ClaimTypes.NameIdentifier, "client"));
+        var context = Context(repository,
+            new("tenant_id", tenant.ToString()),
+            new(ClaimTypes.NameIdentifier, "client"),
+            new(PortalSecurity.ContextClaim, PortalSecurity.TenantContext),
+            new(PortalSecurity.RoleClaim, PortalSecurity.UserRole));
         await PortalSecurity.ValidateTenantAsync(context);
         Assert.Equal(accepted, context.Result?.Failure is null);
         Assert.Equal("client", repository.RequestedClient);
