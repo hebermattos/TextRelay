@@ -201,9 +201,11 @@ services:
       - -c
       - archive_mode=on
       - -c
+      - hba_file=/etc/postgresql/pg_hba.conf
+      - -c
       - archive_timeout=${WAL_ARCHIVE_TIMEOUT_SECONDS:-60}s
       - -c
-      - archive_command=test ! -f /backups/wal/%f && cp %p /backups/wal/%f
+      - archive_command=test -f /backups/wal/%f || cp %p /backups/wal/%f
     environment:
       POSTGRES_USER: "${POSTGRES_USER:-sms}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-TextRelay_Local_2026!}"
@@ -212,8 +214,9 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ${POSTGRES_BACKUP_PATH:-./backups}:/backups
+      - ./database/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$POSTGRES_USER\" -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U \"${POSTGRES_USER}\" -d postgres"]
       interval: 5s
       timeout: 5s
       retries: 20
