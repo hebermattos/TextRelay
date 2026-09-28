@@ -216,7 +216,7 @@ services:
       - ${POSTGRES_BACKUP_PATH:-./backups}:/backups
       - ./database/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"${POSTGRES_USER}\" -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U \"$POSTGRES_USER\" -d postgres"]
       interval: 5s
       timeout: 5s
       retries: 20
