@@ -3,10 +3,9 @@ services:
     build:
       context: .
       dockerfile: docker/rabbitmq/Dockerfile
-    mem_limit: 384m
-    cpus: 0.40
+    mem_limit: 768m
     hostname: rabbitmq-1
-    mem_reservation: 256m
+    mem_reservation: 512m
     environment: &rabbitmq-environment
       RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER:-sms}"
       RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD:-sms}"
@@ -23,10 +22,9 @@ services:
     build:
       context: .
       dockerfile: docker/rabbitmq/Dockerfile
-    mem_limit: 384m
-    cpus: 0.40
+    mem_limit: 768m
     hostname: rabbitmq-2
-    mem_reservation: 256m
+    mem_reservation: 512m
     environment: *rabbitmq-environment
     volumes:
       - rabbitmq-2-data:/var/lib/rabbitmq
@@ -47,10 +45,9 @@ services:
     build:
       context: .
       dockerfile: docker/rabbitmq/Dockerfile
-    mem_limit: 384m
-    cpus: 0.40
+    mem_limit: 768m
     hostname: rabbitmq-3
-    mem_reservation: 256m
+    mem_reservation: 512m
     environment: *rabbitmq-environment
     volumes:
       - rabbitmq-3-data:/var/lib/rabbitmq
@@ -69,9 +66,8 @@ services:
 
   rabbitmq-lb:
     image: haproxy:3.2-alpine
-    mem_limit: 48m
-    cpus: 0.20
-    mem_reservation: 32m
+    mem_limit: 96m
+    mem_reservation: 64m
     depends_on:
       rabbitmq-1:
         condition: service_healthy
@@ -87,9 +83,8 @@ services:
   ollama:
     profiles: [ai]
     image: ollama/ollama:0.12.3
-    mem_limit: 1024m
-    cpus: 0.75
-    mem_reservation: 768m
+    mem_limit: 2048m
+    mem_reservation: 1536m
     volumes:
       - ollama-data:/root/.ollama
     healthcheck:
@@ -102,8 +97,7 @@ services:
   ollama-init:
     profiles: [ai]
     image: ollama/ollama:0.12.3
-    mem_limit: 256m
-    cpus: 0.50
+    mem_limit: 512m
     depends_on:
       ollama:
         condition: service_healthy
@@ -114,9 +108,8 @@ services:
 
   redis:
     image: redis:7.4-alpine
-    mem_limit: 64m
-    cpus: 0.20
-    mem_reservation: 32m
+    mem_limit: 128m
+    mem_reservation: 64m
     ports: ["6379:6379"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -126,9 +119,8 @@ services:
 
   clickstack:
     image: docker.io/clickhouse/clickstack-local:2.21.0
-    mem_limit: 768m
-    cpus: 0.75
-    mem_reservation: 512m
+    mem_limit: 1536m
+    mem_reservation: 1024m
     ports:
       - "18123:8123"
     volumes:
@@ -142,9 +134,8 @@ services:
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.136.0
-    mem_limit: 128m
-    cpus: 0.25
-    mem_reservation: 64m
+    mem_limit: 256m
+    mem_reservation: 128m
     depends_on:
       clickstack:
         condition: service_healthy
@@ -157,9 +148,8 @@ services:
 
   hyperdx-auth:
     image: caddy:2.10-alpine
-    mem_limit: 64m
-    cpus: 0.25
-    mem_reservation: 32m
+    mem_limit: 128m
+    mem_reservation: 64m
     depends_on:
       clickstack:
         condition: service_healthy
@@ -173,8 +163,7 @@ services:
 
   backup-init:
     image: alpine:3.22
-    mem_limit: 64m
-    cpus: 0.25
+    mem_limit: 128m
     user: "0:0"
     volumes:
       - ${POSTGRES_BACKUP_PATH:-./backups}:/backups
@@ -182,9 +171,8 @@ services:
 
   postgres:
     image: postgres:17-alpine
-    mem_reservation: 128m
-    mem_limit: 384m
-    cpus: 0.75
+    mem_reservation: 256m
+    mem_limit: 768m
     depends_on:
       backup-init:
         condition: service_completed_successfully
@@ -224,9 +212,8 @@ services:
 
   db-init:
     image: postgres:17-alpine
-    mem_limit: 256m
-    cpus: 0.50
-    mem_reservation: 128m
+    mem_limit: 512m
+    mem_reservation: 256m
     depends_on:
       postgres:
         condition: service_healthy
@@ -264,9 +251,8 @@ services:
 
   postgres-backup:
     image: postgres:17-alpine
-    mem_limit: 128m
-    cpus: 0.25
-    mem_reservation: 64m
+    mem_limit: 256m
+    mem_reservation: 128m
     depends_on:
       postgres:
         condition: service_healthy
@@ -287,9 +273,8 @@ services:
     restart: unless-stopped
 
   provider-init:
-    mem_reservation: 128m
-    mem_limit: 256m
-    cpus: 0.50
+    mem_reservation: 256m
+    mem_limit: 512m
     build:
       context: .
       dockerfile: database/seeds/TextRelay.Seed/Dockerfile
@@ -305,9 +290,8 @@ services:
       Encryption__MasterKey: "${ENCRYPTION_MASTER_KEY:-AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=}"
 
   api-1:
-    mem_reservation: 128m
-    mem_limit: 256m
-    cpus: 0.50
+    mem_reservation: 256m
+    mem_limit: 512m
     build:
       context: .
       dockerfile: src/TextRelay.Api/Dockerfile
@@ -348,9 +332,8 @@ services:
       OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=api-1,deployment.environment=development"
 
   api-2:
-    mem_reservation: 128m
-    mem_limit: 256m
-    cpus: 0.50
+    mem_reservation: 256m
+    mem_limit: 512m
     build:
       context: .
       dockerfile: src/TextRelay.Api/Dockerfile
@@ -392,9 +375,8 @@ services:
 
   haproxy:
     image: haproxy:3.2-alpine
-    mem_limit: 48m
-    cpus: 0.20
-    mem_reservation: 32m
+    mem_limit: 96m
+    mem_reservation: 64m
     depends_on:
       api-1:
         condition: service_started
@@ -407,9 +389,8 @@ services:
     restart: unless-stopped
 
   worker:
-    mem_reservation: 128m
-    mem_limit: 256m
-    cpus: 0.50
+    mem_reservation: 256m
+    mem_limit: 512m
     build:
       context: .
       dockerfile: src/TextRelay.Worker/Dockerfile
@@ -448,9 +429,8 @@ services:
 
   webhook-tests:
     profiles: [tests]
-    mem_limit: 768m
-    cpus: 1.00
-    mem_reservation: 256m
+    mem_limit: 1536m
+    mem_reservation: 512m
     build:
       context: .
       dockerfile: tests/Dockerfile
@@ -461,9 +441,8 @@ services:
       SMS_TEST_POSTGRES: "Host=postgres;Port=5432;Database=sms_api;Username=${POSTGRES_USER:-sms};Password=${POSTGRES_PASSWORD:-TextRelay_Local_2026!}"
 
   ui:
-    mem_reservation: 32m
-    mem_limit: 64m
-    cpus: 0.20
+    mem_reservation: 64m
+    mem_limit: 128m
     depends_on:
       haproxy:
         condition: service_started
