@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Sms.Api.Controllers;
+using Sms.Api.Shared;
 using Sms.Application.Auth;
 using Sms.Application.Common;
 
@@ -8,6 +11,32 @@ namespace Sms.Infrastructure.Tests;
 public sealed class UserControllerBehaviorTests
 {
     private const string Password = "StrongPassword123!";
+
+    [Theory]
+    [InlineData(typeof(PlatformUsersController), typeof(PortalUserManagementService))]
+    [InlineData(typeof(TenantUsersController), typeof(TenantPortalUserManagementService))]
+    public void UserControllers_ResolveRegisteredServicesWithinTheirScope(Type controllerType, Type serviceType)
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Cache:Enabled"] = "false",
+            ["ConnectionStrings:Postgres"] = "Host=localhost;Database=textrelay_test;Username=test;Password=test"
+        }).Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddLogging();
+        services.AddScoped<ITenantContext>(_ => new TenantContext(Guid.NewGuid()));
+        services.AddTextRelay(configuration);
+
+        using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true });
+        using var firstScope = provider.CreateScope();
+        using var secondScope = provider.CreateScope();
+
+        var service = firstScope.ServiceProvider.GetRequiredService(serviceType);
+        Assert.Same(service, firstScope.ServiceProvider.GetRequiredService(serviceType));
+        Assert.NotSame(service, secondScope.ServiceProvider.GetRequiredService(serviceType));
+        Assert.IsType(controllerType, ActivatorUtilities.CreateInstance(firstScope.ServiceProvider, controllerType));
+    }
 
     [Fact]
     public async Task PlatformController_CoversUserOperationsAndPagination()
