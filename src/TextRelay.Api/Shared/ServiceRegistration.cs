@@ -41,6 +41,8 @@ public static class ServiceRegistration
         services.AddScoped<SendSmsService>();
         services.AddScoped<SendSmsValidator>();
         services.AddScoped<AdministrationService>();
+        services.AddScoped<PortalUserManagementService>();
+        services.AddScoped<TenantPortalUserManagementService>();
         services.AddScoped<ReceiveSmsWebhookService>();
         services.AddScoped<TenantProvisioningService>();
         services.AddScoped<AlertService>();
