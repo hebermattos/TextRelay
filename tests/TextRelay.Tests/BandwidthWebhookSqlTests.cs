@@ -13,7 +13,6 @@ using Sms.Infrastructure.Security;
 
 namespace Sms.Infrastructure.Tests;
 
-[Collection(PostgresTestCollection.Name)]
 public sealed class PostgresFactAttribute : FactAttribute
 {
     public PostgresFactAttribute()
@@ -23,6 +22,8 @@ public sealed class PostgresFactAttribute : FactAttribute
     }
 }
 
+[Collection(PostgresTestCollection.Name)]
+[Trait("Category", "Integration")]
 public sealed class BandwidthWebhookSqlTests
 {
     [PostgresFact]
