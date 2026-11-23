@@ -1,6 +1,8 @@
 name: Integration Tests
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -9,6 +11,7 @@ permissions:
 jobs:
   postgres-integration:
     name: PostgreSQL integration tests
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -41,10 +44,25 @@ jobs:
           docker exec "$POSTGRES_CONTAINER" createdb -U sms sms_api_reporting_tests
           docker exec -i "$POSTGRES_CONTAINER" psql -v ON_ERROR_STOP=1 -U sms -d sms_api_reporting_tests < database/reporting-schema.sql
       - name: Verify webhook and administration persistence against PostgreSQL
-        run: dotnet test TextRelay.Api.sln --configuration Release --filter 'Category=Integration'
+        run: dotnet test TextRelay.Api.sln --configuration Release --filter 'Category=Integration' --logger 'trx;LogFileName=postgres.trx' --results-directory TestResults
+      - name: Confirm Bandwidth persistence test ran successfully
+        shell: pwsh
+        run: |
+          [xml]$report = Get-Content -Raw TestResults/postgres.trx
+          $case = $report.TestRun.Results.UnitTestResult | Where-Object {
+            $_.testName -eq 'Sms.Infrastructure.Tests.BandwidthWebhookSqlTests.Callbacks_PersistEncryptedSettingsAndIsolateIdempotentHistory'
+          }
+          if ($case.outcome -ne 'Passed') { throw 'Bandwidth PostgreSQL persistence test did not pass.' }
+      - name: Upload PostgreSQL test report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: postgres-test-results
+          path: TestResults/postgres.trx
 
   compose-integration:
     name: Docker Compose end-to-end test
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:

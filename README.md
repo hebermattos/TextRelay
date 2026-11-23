@@ -351,7 +351,7 @@ dotnet test TextRelay.Api.sln --configuration Release --collect:"XPlat Code Cove
 
 Pushes to `main` build and test the backend and Angular UI and require at least **80% backend line coverage**.
 
-PostgreSQL integration tests and the Docker Compose bootstrap run only from a manually started workflow.
+Pushes to `main` also run PostgreSQL integration tests and a Docker Compose bootstrap test that verifies tenant isolation over HTTP. The integration workflow can also be started manually on `main`.
 
 ## Architecture
 
